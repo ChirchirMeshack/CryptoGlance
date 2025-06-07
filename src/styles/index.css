@@ -5,3 +5,75 @@
     @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
   }
 }
+
+/**
+ * Scroll Animation Keyframes
+ * 
+ * This animation creates a continuous horizontal scrolling effect:
+ * - Starts at 0% with no translation (original position)
+ * - Moves to -50% translation at 100% (half the width of the duplicated content)
+ * - The -50% translation ensures the second set of items takes the place of the first set
+ * - When combined with duplicated content, creates an infinite loop effect
+ * - Optimized for performance using transform instead of position properties
+ */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/**
+ * Animation Utility Classes
+ * 
+ * .animate-scroll:
+ * - Applies the scroll animation
+ * - Uses linear timing for consistent speed
+ * - Runs infinitely to create continuous motion
+ * - Hardware-accelerated using transform
+ * - Reduced motion support for accessibility
+ * 
+ * .animation-paused:
+ * - Pauses the animation when applied
+ * - Used in conjunction with hover/touch states
+ * - Provides better user interaction control
+ * 
+ * .touch-manipulation:
+ * - Optimizes touch interactions
+ * - Prevents unwanted scrolling/zooming
+ * - Improves touch response time
+ */
+.animate-scroll {
+  animation: scroll linear infinite;
+  will-change: transform;
+}
+
+.animation-paused {
+  animation-play-state: paused;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll {
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .text-green-400 {
+    forced-color-adjust: none;
+    color: ButtonText;
+  }
+  
+  .text-red-400 {
+    forced-color-adjust: none;
+    color: ButtonText;
+  }
+}
