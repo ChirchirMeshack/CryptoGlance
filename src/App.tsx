@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
-import { AppLayout } from './layouts/AppLayout';
-import HomePage from './pages/HomePage';
+import {AppLayout } from './layouts/AppLayout';
+import { HomePage } from './pages/HomePage';
+import { ThemeProvider } from "./components/theme-provider"
 // import { CryptoDetailPage } from './pages/CryptoDetailPage';
 // import { WatchlistPage } from './pages/WatchlistPage';
 // import { ErrorBoundary } from './components/UI/ErrorBoundary';
@@ -10,8 +11,10 @@ import HomePage from './pages/HomePage';
 function App() {
   return (
     // <ErrorBoundary>
-    //   <ThemeProvider>
-    //     <WatchlistProvider>
+   
+    <ThemeProvider>
+          {/* <WatchlistProvider> */}
+          {/* App layout: wraps all routes with common layout components like header, footer, etc. */}
           <AppLayout>
             <Routes>
               <Route path="/" element={<HomePage />} />
@@ -19,10 +22,10 @@ function App() {
               <Route path="/watchlist" element={<WatchlistPage />} /> */}
             </Routes>
           </AppLayout>
-    //     </WatchlistProvider>
-    //   </ThemeProvider>
+           {/* //</WatchlistProvider> */}
+          </ThemeProvider>
+   
     // </ErrorBoundary>
   );
 }
-
-export default App
+export default App;
