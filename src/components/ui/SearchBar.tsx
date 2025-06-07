@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getTopCryptos } from '../../services/api';
-import type { Cryptocurrency } from '../../types';
 
 /**
  * SearchBar component provides a search input for quick cryptocurrency lookup.
