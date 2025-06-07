@@ -39,7 +39,7 @@ export function TickerBar() {
 
   return (
     <div 
-      className="bg-gray-800/50 border-t border-gray-700/50 py-2 md:py-3 overflow-hidden"
+      className="bg-gray-800/50 border-t border-gray-700/50 py-1.5 sm:py-2 md:py-3 w-full overflow-hidden"
       role="marquee"
       aria-label="Cryptocurrency price ticker"
     >
@@ -52,7 +52,7 @@ export function TickerBar() {
       */}
       <div
         className={`
-          flex space-x-4 md:space-x-8 animate-scroll
+          flex space-x-3 sm:space-x-4 md:space-x-8 animate-scroll
           ${isPaused ? 'animation-paused' : ''}
           touch-manipulation
         `}
@@ -61,7 +61,7 @@ export function TickerBar() {
         onTouchStart={handlePause}
         onTouchEnd={handleResume}
         style={{
-          animationDuration: `${cryptos.length * 3}s`,
+          animationDuration: `${cryptos.length * 2.5}s`,
         }}
       >
         {/* 
@@ -73,13 +73,13 @@ export function TickerBar() {
         {[...cryptos.slice(0, 7), ...cryptos.slice(0, 7)].map((crypto, index) => (
           <div 
             key={`${crypto.id}-${index}`} 
-            className="flex items-center space-x-2 whitespace-nowrap px-2"
+            className="flex items-center space-x-1.5 sm:space-x-2 whitespace-nowrap px-1.5 sm:px-2"
             role="listitem"
             aria-label={`${crypto.symbol} price ${formatCurrency(crypto.current_price)}`}
           >
             {/* Cryptocurrency symbol */}
             <span 
-              className="text-gray-300 font-medium text-sm md:text-base"
+              className="text-gray-300 font-medium text-xs sm:text-sm md:text-base"
               aria-label={`${crypto.symbol} symbol`}
             >
               {crypto.symbol.toUpperCase()}
@@ -87,7 +87,7 @@ export function TickerBar() {
             
             {/* Current price with proper formatting */}
             <span 
-              className="text-gray-100 text-sm md:text-base"
+              className="text-gray-100 text-xs sm:text-sm md:text-base"
               aria-label={`Current price: ${formatCurrency(crypto.current_price)}`}
             >
               {formatCurrency(crypto.current_price)}
@@ -102,15 +102,15 @@ export function TickerBar() {
             */}
             <span 
               className={`
-                flex items-center text-sm md:text-base
+                flex items-center text-xs sm:text-sm md:text-base
                 ${crypto.price_change_percentage_24h >= 0 ? 'text-green-400' : 'text-red-400'}
               `}
               aria-label={`24h change: ${formatPercentage(crypto.price_change_percentage_24h)}`}
             >
               {crypto.price_change_percentage_24h >= 0 ? (
-                <TrendingUp className="h-3 w-3 mr-1" aria-hidden="true" />
+                <TrendingUp className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" aria-hidden="true" />
               ) : (
-                <TrendingDown className="h-3 w-3 mr-1" aria-hidden="true" />
+                <TrendingDown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" aria-hidden="true" />
               )}
               <span className="sr-only">
                 {crypto.price_change_percentage_24h >= 0 ? 'increased' : 'decreased'} by

@@ -8,7 +8,7 @@ import { CryptoList } from '../components/Dashboard/CryptoList';
 export function HomePage() {
   return (
     // Main container with vertical spacing between sections
-    <div className="space-y-8">
+    <div className="space-y-8 sm:w-full">
       {/* Header section with page title */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>

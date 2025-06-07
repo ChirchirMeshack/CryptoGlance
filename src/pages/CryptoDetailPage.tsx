@@ -10,67 +10,85 @@ import { useWatchlist } from '../hooks/useWatchlist';
 
 /**
  * CryptoDetailPage displays detailed information for a single cryptocurrency.
- * - Fetches the list of top cryptocurrencies and finds the one matching the route param.
- * - Shows loading skeletons while fetching.
- * - Displays price, market stats, and a price chart.
- * - Allows adding/removing the crypto to/from the user's watchlist.
+ * Features:
+ * - Responsive layout for all screen sizes
+ * - Optimized loading states
+ * - Touch-friendly interactions
+ * - Accessible navigation
+ * - Clear visual hierarchy
+ * - Interactive price chart
  */
 export function CryptoDetailPage() {
-  // Get the crypto ID from the URL params
   const { id } = useParams<{ id: string }>();
-
-  // Custom hook for watchlist management
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
-  // Fetch the list of top cryptocurrencies using React Query
   const { data: cryptos, isLoading } = useQuery({
     queryKey: ['cryptos'],
     queryFn: () => getTopCryptos(),
+    staleTime: 30000, // 30 seconds
   });
 
-  // Find the crypto matching the current ID
   const crypto = cryptos?.find((c) => c.id === id);
-
-  // Check if the crypto is in the user's watchlist
   const isWatched = id ? isInWatchlist(id) : false;
 
-  // Show loading skeletons while data is being fetched
   if (isLoading) {
     return (
-      <div className="space-y-8">
-        <div className="flex items-center space-x-4">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div>
-            <Skeleton className="h-8 w-48 mb-2" />
-            <Skeleton className="h-6 w-24" />
+      <div className="space-y-6 sm:space-y-8">
+        {/* Back button skeleton */}
+        <Skeleton className="h-6 w-24" />
+        
+        {/* Header skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full" />
+            <div>
+              <Skeleton className="h-6 sm:h-8 w-32 sm:w-48 mb-2" />
+              <Skeleton className="h-4 sm:h-6 w-24 sm:w-32" />
+            </div>
           </div>
+          <Skeleton className="h-10 w-10 rounded-lg" />
         </div>
-        <Skeleton className="h-[500px] rounded-xl" />
+
+        {/* Stats grid skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+            >
+              <Skeleton className="h-4 sm:h-5 w-24 sm:w-32 mb-2" />
+              <Skeleton className="h-6 sm:h-8 w-32 sm:w-40 mb-1" />
+              <Skeleton className="h-3 sm:h-4 w-20 sm:w-24" />
+            </div>
+          ))}
+        </div>
+
+        {/* Chart skeleton */}
+        <Skeleton className="h-[300px] sm:h-[400px] rounded-xl" />
       </div>
     );
   }
 
-  // If the crypto is not found, show a not found message and a back link
   if (!crypto) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold mb-4">Cryptocurrency not found</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Cryptocurrency not found</h2>
         <Link
           to="/"
-          className="inline-flex items-center text-primary-600 hover:text-primary-700"
+          className="inline-flex items-center text-primary-600 hover:text-primary-700
+                   focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg
+                   active:scale-95 transform"
         >
-          <ArrowLeft className="h-5 w-5 mr-2" />
+          <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
           Back to Dashboard
         </Link>
       </div>
     );
   }
 
-  // Extract price change and determine if price is up or down
   const priceChange = crypto.price_change_percentage_24h;
   const isPriceUp = priceChange >= 0;
 
-  // Handler for toggling the crypto in the watchlist
   const handleWatchlistToggle = () => {
     if (isWatched) {
       removeFromWatchlist(crypto.id);
@@ -79,49 +97,52 @@ export function CryptoDetailPage() {
     }
   };
 
-  // Main render: crypto details, stats, and chart
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Back to dashboard link */}
       <div>
         <Link
           to="/"
-          className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-6"
+          className="inline-flex items-center text-gray-600 dark:text-gray-400 
+                   hover:text-gray-900 dark:hover:text-gray-100 mb-4 sm:mb-6
+                   focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg
+                   active:scale-95 transform"
         >
-          <ArrowLeft className="h-5 w-5 mr-2" />
+          <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
           Back to Dashboard
         </Link>
 
         {/* Header: logo, name, symbol, price, price change, watchlist button */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            {/* Crypto logo */}
-            <img src={crypto.image} alt={crypto.name} className="w-12 h-12" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <img 
+              src={crypto.image} 
+              alt={crypto.name} 
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
+            />
             <div>
-              {/* Name and symbol */}
-              <h1 className="text-2xl font-bold flex items-center">
+              <h1 className="text-xl sm:text-2xl font-bold flex items-center">
                 {crypto.name}
-                <span className="text-gray-500 dark:text-gray-400 ml-2">
+                <span className="text-gray-500 dark:text-gray-400 ml-2 text-base sm:text-lg">
                   {crypto.symbol.toUpperCase()}
                 </span>
               </h1>
-              {/* Price and 24h change */}
               <div className="flex items-center space-x-2">
-                <span className="text-2xl font-semibold">
+                <span className="text-xl sm:text-2xl font-semibold">
                   {formatCurrency(crypto.current_price)}
                 </span>
                 <div className="flex items-center space-x-1">
                   {isPriceUp ? (
-                    <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
                   ) : (
-                    <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 dark:text-red-400" />
                   )}
                   <span
-                    className={
+                    className={`text-sm sm:text-base ${
                       isPriceUp
                         ? 'text-green-600 dark:text-green-400'
                         : 'text-red-600 dark:text-red-400'
-                    }
+                    }`}
                   >
                     {formatPercentage(priceChange)}
                   </span>
@@ -129,52 +150,51 @@ export function CryptoDetailPage() {
               </div>
             </div>
           </div>
-          {/* Watchlist toggle button */}
           <button
             onClick={handleWatchlistToggle}
-            className={`p-2 rounded-lg transition-colors ${
-              isWatched
-                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-            }`}
+            className={`p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500
+                     active:scale-95 transform ${
+                       isWatched
+                         ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
+                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                     }`}
             aria-label={isWatched ? 'Remove from watchlist' : 'Add to watchlist'}
           >
-            <Star className={`h-6 w-6 ${isWatched ? 'fill-current' : ''}`} />
+            <Star className={`h-5 w-5 sm:h-6 sm:w-6 ${isWatched ? 'fill-current' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Market stats: Market Cap, 24h Volume, Circulating Supply */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Market stats grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
         {/* Market Cap */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">Market Cap</h3>
-          <p className="text-2xl font-semibold">{formatCurrency(crypto.market_cap)}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">Market Cap</h3>
+          <p className="text-xl sm:text-2xl font-semibold">{formatCurrency(crypto.market_cap)}</p>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             Rank #{crypto.market_cap_rank}
           </p>
         </div>
         {/* 24h Trading Volume */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">24h Trading Volume</h3>
-          <p className="text-2xl font-semibold">{formatCurrency(crypto.total_volume)}</p>
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">24h Trading Volume</h3>
+          <p className="text-xl sm:text-2xl font-semibold">{formatCurrency(crypto.total_volume)}</p>
         </div>
         {/* Circulating Supply */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-2">Circulating Supply</h3>
-          <p className="text-2xl font-semibold">
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">Circulating Supply</h3>
+          <p className="text-xl sm:text-2xl font-semibold">
             {formatLargeNumber(crypto.circulating_supply)} {crypto.symbol.toUpperCase()}
           </p>
-          {/* Show max supply if available */}
           {crypto.max_supply && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
               Max: {formatLargeNumber(crypto.max_supply)} {crypto.symbol.toUpperCase()}
             </p>
           )}
         </div>
       </div>
 
-      {/* Price chart for the selected crypto */}
+      {/* Price chart */}
       <PriceChart cryptoId={crypto.id} />
     </div>
   );

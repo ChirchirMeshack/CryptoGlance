@@ -37,24 +37,23 @@ const timeFrameDays = {
 
 /**
  * PriceChart component displays a historical price chart for a given cryptocurrency.
- * - Allows the user to select a time frame (24h, 7d, 30d, 90d, 1y).
- * - Fetches chart data for the selected time frame using React Query.
- * - Shows a loading skeleton while fetching.
- * - Renders an interactive area chart using recharts.
- * - Formats axes, tooltips, and buttons for a polished UI.
+ * Features:
+ * - Responsive design for all screen sizes
+ * - Touch-friendly interactions
+ * - Optimized chart display
+ * - Accessible controls
+ * - Loading states
+ * - Time frame selection
  */
 export function PriceChart({ cryptoId }: PriceChartProps) {
-    // State for the selected time frame (default: 7d)
     const [timeFrame, setTimeFrame] = useState<TimeFrame>('7d');
 
-    // Fetch chart data for the selected crypto and time frame using React Query
     const { data: chartData, isLoading } = useQuery({
         queryKey: ['chart', cryptoId, timeFrame],
         queryFn: () => getCryptoChart(cryptoId, timeFrameDays[timeFrame]),
+        staleTime: 30000, // 30 seconds
     });
 
-    // Memoize formatted chart data for recharts
-    // Converts API data ([timestamp, price]) to { date: Date, price: number }
     const formattedData = useMemo(() => {
         if (!chartData) return [];
         return chartData.prices.map(([timestamp, price]) => ({
@@ -63,26 +62,42 @@ export function PriceChart({ cryptoId }: PriceChartProps) {
         }));
     }, [chartData]);
 
-    // Show a skeleton loader while data is being fetched
     if (isLoading) {
-        return <Skeleton className="w-full h-[400px] rounded-xl" />;
+        return (
+            <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                    <Skeleton className="h-6 w-32" />
+                    <div className="flex space-x-1 sm:space-x-2">
+                        {timeFrames.map((_, i) => (
+                            <Skeleton key={i} className="h-8 w-12 sm:w-14" />
+                        ))}
+                    </div>
+                </div>
+                <Skeleton className="w-full h-[300px] sm:h-[400px] rounded-lg" />
+            </div>
+        );
     }
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-            {/* Header with title and time frame selection buttons */}
-            <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold">Price Chart</h3>
-                <div className="flex space-x-2">
+        <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+            {/* Header with title and time frame selection */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <h3 className="text-base sm:text-lg font-semibold">Price Chart</h3>
+                <div className="flex flex-wrap gap-1 sm:gap-2">
                     {timeFrames.map(({ label, value }) => (
                         <button
                             key={value}
                             onClick={() => setTimeFrame(value)}
-                            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                                timeFrame === value
+                            className={`
+                                px-2 sm:px-3 py-1.5 sm:py-1 rounded-lg text-xs sm:text-sm font-medium
+                                transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500
+                                active:scale-95 transform
+                                ${timeFrame === value
                                     ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
                                     : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                            }`}
+                                }
+                            `}
+                            aria-pressed={timeFrame === value}
                         >
                             {label}
                         </button>
@@ -90,20 +105,22 @@ export function PriceChart({ cryptoId }: PriceChartProps) {
                 </div>
             </div>
 
-            {/* Chart container */}
-            <div className="h-[400px]">
+            {/* Chart container with responsive height */}
+            <div className="h-[300px] sm:h-[400px] touch-none">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={formattedData}>
-                        {/* Gradient fill for the area under the curve */}
                         <defs>
                             <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3} />
                                 <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        {/* Grid lines for better readability */}
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} />
-                        {/* X axis: shows time, formatted based on time frame */}
+                        <CartesianGrid 
+                            strokeDasharray="3 3" 
+                            stroke="#374151" 
+                            opacity={0.1}
+                            vertical={false}
+                        />
                         <XAxis
                             dataKey="date"
                             tickFormatter={(date) =>
@@ -111,21 +128,23 @@ export function PriceChart({ cryptoId }: PriceChartProps) {
                                     ? format(date, 'HH:mm')
                                     : format(date, 'MMM dd')
                             }
-                            tick={{ fill: '#6B7280' }}
+                            tick={{ fill: '#6B7280', fontSize: 12 }}
+                            tickMargin={8}
+                            minTickGap={30}
                         />
-                        {/* Y axis: shows price, formatted as currency */}
                         <YAxis
                             tickFormatter={(value) => formatCurrency(value)}
-                            tick={{ fill: '#6B7280' }}
+                            tick={{ fill: '#6B7280', fontSize: 12 }}
+                            tickMargin={8}
                             domain={['dataMin', 'dataMax']}
+                            width={80}
                         />
-                        {/* Tooltip: shows date and price on hover */}
                         <Tooltip
                             content={({ active, payload }) => {
                                 if (!active || !payload?.length) return null;
                                 const data = payload[0].payload;
                                 return (
-                                    <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+                                    <div className="bg-white dark:bg-gray-800 p-2 sm:p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 text-xs sm:text-sm">
                                         <p className="text-gray-500 dark:text-gray-400">
                                             {timeFrame === '24h'
                                                 ? format(data.date, 'MMM dd, HH:mm')
@@ -135,12 +154,13 @@ export function PriceChart({ cryptoId }: PriceChartProps) {
                                     </div>
                                 );
                             }}
+                            cursor={{ stroke: '#0ea5e9', strokeWidth: 1, strokeDasharray: '3 3' }}
                         />
-                        {/* Area: the main price line and filled area */}
                         <Area
                             type="monotone"
                             dataKey="price"
                             stroke="#0ea5e9"
+                            strokeWidth={2}
                             fillOpacity={1}
                             fill="url(#colorPrice)"
                         />

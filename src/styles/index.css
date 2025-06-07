@@ -15,6 +15,7 @@
  * - The -50% translation ensures the second set of items takes the place of the first set
  * - When combined with duplicated content, creates an infinite loop effect
  * - Optimized for performance using transform instead of position properties
+ * - Smoother animation on mobile devices
  */
 @keyframes scroll {
   0% {
@@ -34,6 +35,7 @@
  * - Runs infinitely to create continuous motion
  * - Hardware-accelerated using transform
  * - Reduced motion support for accessibility
+ * - Optimized for mobile performance
  * 
  * .animation-paused:
  * - Pauses the animation when applied
@@ -48,6 +50,9 @@
 .animate-scroll {
   animation: scroll linear infinite;
   will-change: transform;
+  -webkit-overflow-scrolling: touch;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .animation-paused {
@@ -56,6 +61,7 @@
 
 .touch-manipulation {
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Reduced motion support */
@@ -75,5 +81,12 @@
   .text-red-400 {
     forced-color-adjust: none;
     color: ButtonText;
+  }
+}
+
+/* Mobile optimization */
+@media (max-width: 640px) {
+  .animate-scroll {
+    animation-duration: calc(var(--scroll-duration, 30s) * 0.8) !important;
   }
 }
