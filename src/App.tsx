@@ -23,7 +23,7 @@ function App() {
            </WatchlistProvider>
           </ThemeProvider>
    
-    // </ErrorBoundary>
+     </ErrorBoundary>
   );
 }
 export default App;

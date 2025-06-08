@@ -1,4 +1,4 @@
-import { Home, Star, TrendingUp, X } from 'lucide-react';
+import { Home, Star, TrendingUp, X, Github } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getGlobalStats } from '../services/api';
@@ -143,6 +143,25 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </div>
             </>
           ) : null}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-auto p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="text-center space-y-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            © {new Date().getFullYear()} CryptoGlance
+          </p>
+          <a
+            href="https://github.com/ChirchirMeshack"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-xs text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          >
+
+            Made with ❤️ by ChirchirMeshack
+            <Github className="h-3 w-3 ml-1" />
+          </a>
         </div>
       </div>
     </aside>
