@@ -1,54 +1,167 @@
-# React + TypeScript + Vite
+# CryptoGlance
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive cryptocurrency dashboard built with React, TypeScript, and Vite. Track real-time cryptocurrency prices, market statistics, and manage your watchlist with a beautiful, mobile-first interface.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Real-time Data
 
-## Expanding the ESLint configuration
+- Live cryptocurrency price updates
+- Market statistics and trends
+- 24-hour price changes
+- Trading volume and market cap information
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Interactive Components
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- Responsive price charts with multiple timeframes
+- Animated price ticker with pause on hover
+- Interactive cryptocurrency cards
+- Customizable watchlist
+
+### User Experience
+
+- Mobile-first, responsive design
+- Dark mode support
+- Smooth animations and transitions
+- Touch-friendly interactions
+- Keyboard navigation support
+
+### Performance
+
+- Optimized data fetching with React Query
+- Efficient state management
+- Lazy loading and code splitting
+- Responsive image loading
+
+## Tech Stack
+
+- **Frontend Framework:** React 18 with TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS
+- **State Management:** React Query
+- **Charts:** Recharts
+- **Icons:** Lucide React
+- **Routing:** React Router
+- **Type Checking:** TypeScript
+- **Code Quality:** ESLint, Prettier
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 16.x or later
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/ChirchirMeshack/CryptoGlance.git
+   cd CryptoGlance
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Start the development server:
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Building for Production
+
+```bash
+npm run build
+# or
+yarn build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The build artifacts will be stored in the `dist/` directory.
+
+## Project Structure
+
+```
+src/
+├── assets/         # Static assets
+├── components/     # Reusable components
+│   ├── Dashboard/  # Dashboard-specific components
+│   └── ui/         # UI components
+├── context/        # React context providers
+├── hooks/          # Custom React hooks
+├── layouts/        # Layout components
+├── lib/           # Third-party library configurations
+├── pages/         # Page components
+├── services/      # API services
+├── styles/        # Global styles
+├── types/         # TypeScript type definitions
+└── utils/         # Utility functions
+```
+
+## Key Components
+
+### Dashboard
+
+- `TickerBar`: Real-time price ticker with animation
+- `CryptoList`: Grid of cryptocurrency cards
+- `MarketStats`: Global market statistics
+- `PriceChart`: Interactive price charts
+- `Watchlist`: User's saved cryptocurrencies
+
+### Layout
+
+- `AppLayout`: Main application layout
+- `Header`: Navigation and search
+- `Sidebar`: Mobile-friendly navigation
+
+## Development
+
+### Code Style
+
+This project uses ESLint and Prettier for code formatting. The configuration extends the recommended TypeScript rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
 export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
+  extends: [
+    ...tseslint.configs.recommendedTypeChecked,
+    ...tseslint.configs.strictTypeChecked,
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    parserOptions: {
+      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+      tsconfigRootDir: import.meta.dirname,
+    },
   },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+});
 ```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [CoinGecko API](https://www.coingecko.com/en/api) for cryptocurrency data
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [Recharts](https://recharts.org/) for charts
+- [Lucide Icons](https://lucide.dev/) for icons
