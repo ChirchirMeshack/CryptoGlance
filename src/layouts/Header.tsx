@@ -63,7 +63,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <header 
-      className="bg-gray-900 border-b border-border sticky top-0 z-30"
+      className="bg-gray-900 border-b border-gray-800 sticky top-0 z-30"
       role="banner"
     >
       <div className="container mx-auto px-4">
@@ -72,13 +72,13 @@ export function Header({ onMenuClick }: HeaderProps) {
           <div className="flex items-center space-x-4 md:space-x-6">
             <Link 
               to="/" 
-              className="text-xl md:text-2xl font-bold text-primary hover:text-primary/90 transition-colors"
+              className="text-xl md:text-2xl font-bold text-blue-400 hover:text-blue-300 transition-colors"
               aria-label="CryptoGlance Home"
             >
               CryptoGlance
             </Link>
             <span 
-              className="text-xs md:text-sm text-muted-foreground bg-muted px-2 md:px-3 py-1 rounded-full bg-green-800"
+              className="text-xs md:text-sm text-gray-400 px-2 md:px-3 py-1 rounded-full bg-green-800"
               aria-label="Live market data"
             >
               Live Data
@@ -93,7 +93,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           {/* Actions section */}
           <div className="flex items-center space-x-4">
             <button 
-              className={`p-2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring rounded-full ${
+              className={`p-2 text-gray-400 hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full ${
                 isRefreshing ? 'animate-spin' : ''
               }`}
               onClick={handleRefresh}

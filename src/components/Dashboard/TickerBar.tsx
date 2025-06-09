@@ -29,7 +29,7 @@ export function TickerBar() {
   // This will automatically handle caching and revalidation
   const { data: cryptos } = useQuery({
     queryKey: ['cryptos'],
-    queryFn: () => getTopCryptos(1, 10),
+    queryFn: () => getTopCryptos(1, 12),
     // Add stale time to reduce unnecessary refetches
     staleTime: 30000, // 30 seconds
   });

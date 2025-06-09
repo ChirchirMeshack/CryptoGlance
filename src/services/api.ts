@@ -1,32 +1,51 @@
 import axios from 'axios';
 import type { Cryptocurrency, MarketStats, ChartData } from '../types';
-
-// Base URL for CoinGecko API
-const BASE_URL = 'https://api.coingecko.com/api/v3';
+import { API_CONFIG, API_ENDPOINTS, API_PARAMS } from '../config';
 
 // Create an Axios instance with default configuration
 export const api = axios.create({
-    baseURL: BASE_URL,
-    timeout: 10000, // 10 seconds timeout for requests
+    baseURL: API_CONFIG.BASE_URL,
+    timeout: API_CONFIG.TIMEOUT,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    },
+});
+
+// Add API key to requests if available
+api.interceptors.request.use((config) => {
+    if (API_CONFIG.API_KEY) {
+        config.params = {
+            ...config.params,
+            [API_PARAMS.API_KEY]: API_CONFIG.API_KEY,
+        };
+    }
+    return config;
 });
 
 /**
  * Fetches a paginated list of top cryptocurrencies by market cap.
  * @param page - The page number to fetch (default: 1)
- * @param perPage - Number of cryptocurrencies per page (default: 100)
+ * @param perPage - Number of cryptocurrencies per page (default: 40)
  * @returns Promise resolving to an array of Cryptocurrency objects
  */
-export const getTopCryptos = async (page = 1, perPage = 100): Promise<Cryptocurrency[]> => {
-    const { data } = await api.get('/coins/markets', {
-        params: {
-            vs_currency: 'usd',           // Return prices in USD
-            order: 'market_cap_desc',     // Order by market cap descending
-            per_page: perPage,            // Number of results per page
-            page,                        // Page number
-            sparkline: false,             // Exclude sparkline data
-        },
-    });
-    return data;
+export const getTopCryptos = async (page = 1, perPage: number = API_CONFIG.DEFAULT_PER_PAGE): Promise<Cryptocurrency[]> => {
+    try {
+        const { data } = await api.get(API_ENDPOINTS.MARKETS, {
+            params: {
+                [API_PARAMS.VS_CURRENCY]: API_CONFIG.DEFAULT_CURRENCY,
+                [API_PARAMS.ORDER]: 'market_cap_desc',
+                [API_PARAMS.PER_PAGE]: perPage,
+                [API_PARAMS.PAGE]: page,
+                [API_PARAMS.SPARKLINE]: false,
+                price_change_percentage: '24h',
+            },
+        });
+        return data;
+    } catch (error) {
+        console.error('Error fetching top cryptocurrencies:', error);
+        throw error;
+    }
 };
 
 /**
@@ -34,9 +53,13 @@ export const getTopCryptos = async (page = 1, perPage = 100): Promise<Cryptocurr
  * @returns Promise resolving to a MarketStats object containing global stats
  */
 export const getGlobalStats = async (): Promise<MarketStats> => {
-    const { data } = await api.get('/global');
-    // The actual stats are nested under the 'data' property in the response
-    return data.data;
+    try {
+        const { data } = await api.get(API_ENDPOINTS.GLOBAL);
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching global stats:', error);
+        throw error;
+    }
 };
 
 /**
@@ -47,13 +70,18 @@ export const getGlobalStats = async (): Promise<MarketStats> => {
  */
 export const getCryptoChart = async (
     id: string,
-    days: string = '1',
+    days: string = API_CONFIG.DEFAULT_CHART_DAYS,
 ): Promise<ChartData> => {
-    const { data } = await api.get(`/coins/${id}/market_chart`, {
-        params: {
-            vs_currency: 'usd', // Return prices in USD
-            days,               // Number of days to fetch
-        },
-    });
-    return data;
+    try {
+        const { data } = await api.get(API_ENDPOINTS.MARKET_CHART(id), {
+            params: {
+                [API_PARAMS.VS_CURRENCY]: API_CONFIG.DEFAULT_CURRENCY,
+                [API_PARAMS.DAYS]: days,
+            },
+        });
+        return data;
+    } catch (error) {
+        console.error(`Error fetching chart data for ${id}:`, error);
+        throw error;
+    }
 };
