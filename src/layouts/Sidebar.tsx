@@ -49,7 +49,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
     { icon: Star, label: 'Watchlist', path: '/watchlist' },
-    { icon: TrendingUp, label: 'Markets', path: '/markets' },
   ];
 
   return (
