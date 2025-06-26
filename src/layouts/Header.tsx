@@ -1,11 +1,12 @@
-import { Link } from 'react-router-dom';
-import { RefreshCw, Menu, Sun, Moon } from 'lucide-react';
-import { SearchBar } from '../components/ui/SearchBar';
-import { TickerBar } from '../components/Dashboard/TickerBar';
-import { useTheme } from '../components/theme-provider';
-import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useSnackbar } from 'notistack';
+import { Link } from "react-router-dom";
+import { RefreshCw, Menu, Sun, Moon, LogOutIcon } from "lucide-react";
+import { SearchBar } from "../components/ui/SearchBar";
+import { TickerBar } from "../components/Dashboard/TickerBar";
+import { useTheme } from "../components/theme-provider";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useSnackbar } from "notistack";
+import { useAuth } from "../context/AuthContext";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -27,21 +28,39 @@ export function Header({ onMenuClick }: HeaderProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { theme, setTheme } = useTheme();
   const { enqueueSnackbar } = useSnackbar();
+  const { logout, currentUser } = useAuth();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      enqueueSnackbar("Logged out successfully", {
+        variant: "success",
+        autoHideDuration: 3000,
+        preventDuplicate: true,
+      });
+    } catch (error: unknown) {
+      console.error("Logout failed:", error);
+      enqueueSnackbar("Failed to log out", {
+        variant: "error",
+        autoHideDuration: 3000,
+        preventDuplicate: true,
+      });
+    }
+  };
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
       // Invalidate and refetch all queries
       await queryClient.invalidateQueries();
       await queryClient.refetchQueries();
-      enqueueSnackbar('Data refreshed successfully', { 
-        variant: 'success',
+      enqueueSnackbar("Data refreshed successfully", {
+        variant: "success",
         autoHideDuration: 2000,
       });
     } catch (error: unknown) {
-      console.error('Refresh failed:', error);
-      enqueueSnackbar('Failed to refresh data', { 
-        variant: 'error',
+      console.error("Refresh failed:", error);
+      enqueueSnackbar("Failed to refresh data", {
+        variant: "error",
         autoHideDuration: 3000,
       });
     } finally {
@@ -53,16 +72,16 @@ export function Header({ onMenuClick }: HeaderProps) {
   };
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
-    enqueueSnackbar(`Switched to ${newTheme} mode`, { 
-      variant: 'info',
+    enqueueSnackbar(`Switched to ${newTheme} mode`, {
+      variant: "info",
       autoHideDuration: 2000,
     });
   };
 
   return (
-    <header 
+    <header
       className="bg-gray-900 border-b border-gray-800 sticky top-0 z-30"
       role="banner"
     >
@@ -70,14 +89,14 @@ export function Header({ onMenuClick }: HeaderProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo and brand section */}
           <div className="flex items-center space-x-4 md:space-x-6">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="text-xl md:text-2xl font-bold text-blue-400 hover:text-blue-300 transition-colors"
               aria-label="CryptoGlance Home"
             >
               CryptoGlance
             </Link>
-            <span 
+            <span
               className="text-xs md:text-sm text-gray-400 px-2 md:px-3 py-1 rounded-full bg-green-800"
               aria-label="Live market data"
             >
@@ -92,9 +111,9 @@ export function Header({ onMenuClick }: HeaderProps) {
 
           {/* Actions section */}
           <div className="flex items-center space-x-4">
-            <button 
+            <button
               className={`p-2 text-gray-400 hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full ${
-                isRefreshing ? 'animate-spin' : ''
+                isRefreshing ? "animate-spin" : ""
               }`}
               onClick={handleRefresh}
               disabled={isRefreshing}
@@ -107,19 +126,29 @@ export function Header({ onMenuClick }: HeaderProps) {
               className="p-2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring rounded-full"
               aria-label="Toggle theme"
             >
-              {theme === 'dark' ? (
+              {theme === "dark" ? (
                 <Sun className="h-5 w-5" aria-hidden="true" />
               ) : (
                 <Moon className="h-5 w-5" aria-hidden="true" />
               )}
             </button>
-            <button 
+            <button
               className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring rounded-full"
               onClick={onMenuClick}
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
             </button>
+            {currentUser && (
+              <div className="flex flex-col items-center gap-1">
+                <LogOutIcon
+                  className="h-5 w-5 text-red-600 cursor-pointer hover:text-red-500 transition-colors"
+                  aria-hidden="true"
+                  onClick={handleLogout}
+                />
+                <span>{currentUser.displayName}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

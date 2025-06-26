@@ -1,13 +1,26 @@
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, TrendingUp, TrendingDown, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { getTopCryptos } from '../services/api';
-import { PriceChart } from '../components/Dashboard/PriceChart';
-import { Skeleton } from '../components/ui/skeleton';
-import { formatCurrency, formatLargeNumber, formatPercentage } from '../utils/formatters';
-import { useWatchlist } from '../hooks/useWatchlist';
-
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ArrowLeft,
+  TrendingUp,
+  TrendingDown,
+  Star,
+  ArrowRight,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { getTopCryptos } from "../services/api";
+import { PriceChart } from "../components/Dashboard/PriceChart";
+import { Skeleton } from "../components/ui/skeleton";
+import {
+  formatCurrency,
+  formatLargeNumber,
+  formatPercentage,
+} from "../utils/formatters";
+import { useWatchlist } from "../hooks/useWatchlist";
+import { useState } from "react";
+import { enqueueSnackbar } from "notistack";
+import { useAuth } from "../context/AuthContext";
+import { useLocation } from "react-router-dom";
 /**
  * CryptoDetailPage displays detailed information for a single cryptocurrency.
  * Features:
@@ -21,13 +34,48 @@ import { useWatchlist } from '../hooks/useWatchlist';
 export function CryptoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const { pathname } = useLocation();
 
   const { data: cryptos, isLoading } = useQuery({
-    queryKey: ['cryptos'],
+    queryKey: ["cryptos"],
     queryFn: () => getTopCryptos(),
     staleTime: 30000, // 30 seconds
   });
 
+  const { currentUser }: any = useAuth();
+  console.log("Current User:", currentUser);
+  if (showLoginForm) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 sm:p-8 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
+          Please log in to add cryptocurrencies to your watchlist
+        </h2>
+        <div className="flex justify-between">
+          <Link
+            to="/login"
+            state={{ from: pathname }}
+            className="inline-flex items-center text-gray-600 dark:text-gray-400 
+                   hover:text-gray-900 dark:hover:text-gray-100 rounded-lg
+                   active:scale-95 transform"
+          >
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
+            Go to Login
+          </Link>
+          <Link
+            to={`/crypto/${id}`}
+            onClick={() => setShowLoginForm(false)}
+            className="inline-flex items-center text-gray-600 dark:text-gray-400 
+                   hover:text-gray-900 dark:hover:text-gray-100 rounded-lg
+                   active:scale-95 transform"
+          >
+            Back to Crypto Detail
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
   const crypto = cryptos?.find((c) => c.id === id);
   const isWatched = id ? isInWatchlist(id) : false;
 
@@ -36,7 +84,7 @@ export function CryptoDetailPage() {
       <div className="space-y-6 sm:space-y-8">
         {/* Back button skeleton */}
         <Skeleton className="h-6 w-24" />
-        
+
         {/* Header skeleton */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-4">
@@ -72,7 +120,9 @@ export function CryptoDetailPage() {
   if (!crypto) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 text-center">
-        <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Cryptocurrency not found</h2>
+        <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
+          Cryptocurrency not found
+        </h2>
         <Link
           to="/"
           className="inline-flex items-center text-primary-600 hover:text-primary-700
@@ -115,9 +165,9 @@ export function CryptoDetailPage() {
         {/* Header: logo, name, symbol, price, price change, watchlist button */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center space-x-3 sm:space-x-4">
-            <img 
-              src={crypto.image} 
-              alt={crypto.name} 
+            <img
+              src={crypto.image}
+              alt={crypto.name}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
             />
             <div>
@@ -140,8 +190,8 @@ export function CryptoDetailPage() {
                   <span
                     className={`text-sm sm:text-base ${
                       isPriceUp
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {formatPercentage(priceChange)}
@@ -151,16 +201,37 @@ export function CryptoDetailPage() {
             </div>
           </div>
           <button
-            onClick={handleWatchlistToggle}
+            // onClick={handleWatchlistToggle}
+            onClick={
+              currentUser
+                ? handleWatchlistToggle
+                : () => {
+                    enqueueSnackbar(
+                      "Please log in to add cryptocurrencies to your watchlist",
+                      {
+                        variant: "info",
+                        autoHideDuration: 5000,
+                        preventDuplicate: true,
+                      }
+                    );
+                    setShowLoginForm(true);
+                  }
+            }
             className={`p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500
                      active:scale-95 transform ${
                        isWatched
-                         ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
-                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                         ? "bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                         : "hover:bg-gray-100 dark:hover:bg-gray-700"
                      }`}
-            aria-label={isWatched ? 'Remove from watchlist' : 'Add to watchlist'}
+            aria-label={
+              isWatched ? "Remove from watchlist" : "Add to watchlist"
+            }
           >
-            <Star className={`h-5 w-5 sm:h-6 sm:w-6 ${isWatched ? 'fill-current' : ''}`} />
+            <Star
+              className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                isWatched ? "fill-current" : ""
+              }`}
+            />
           </button>
         </div>
       </div>
@@ -169,26 +240,38 @@ export function CryptoDetailPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
         {/* Market Cap */}
         <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">Market Cap</h3>
-          <p className="text-xl sm:text-2xl font-semibold">{formatCurrency(crypto.market_cap)}</p>
+          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">
+            Market Cap
+          </h3>
+          <p className="text-xl sm:text-2xl font-semibold">
+            {formatCurrency(crypto.market_cap)}
+          </p>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             Rank #{crypto.market_cap_rank}
           </p>
         </div>
         {/* 24h Trading Volume */}
         <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">24h Trading Volume</h3>
-          <p className="text-xl sm:text-2xl font-semibold">{formatCurrency(crypto.total_volume)}</p>
+          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">
+            24h Trading Volume
+          </h3>
+          <p className="text-xl sm:text-2xl font-semibold">
+            {formatCurrency(crypto.total_volume)}
+          </p>
         </div>
         {/* Circulating Supply */}
         <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">Circulating Supply</h3>
+          <h3 className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-2">
+            Circulating Supply
+          </h3>
           <p className="text-xl sm:text-2xl font-semibold">
-            {formatLargeNumber(crypto.circulating_supply)} {crypto.symbol.toUpperCase()}
+            {formatLargeNumber(crypto.circulating_supply)}{" "}
+            {crypto.symbol.toUpperCase()}
           </p>
           {crypto.max_supply && (
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-              Max: {formatLargeNumber(crypto.max_supply)} {crypto.symbol.toUpperCase()}
+              Max: {formatLargeNumber(crypto.max_supply)}{" "}
+              {crypto.symbol.toUpperCase()}
             </p>
           )}
         </div>
