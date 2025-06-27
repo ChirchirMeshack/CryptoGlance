@@ -62,6 +62,12 @@ export async function removeFromWatchList(
       where("user", "==", userId)
     );
     const querySnapshot = await getDocs(q);
+	  if (querySnapshot.docs.length === 0) {
+	  return {
+		message: `${id} not found in watchlist.`,
+		success: false,
+	  };
+	}
     const docRef = querySnapshot.docs[0].ref;
     await deleteDoc(docRef);
     return {
