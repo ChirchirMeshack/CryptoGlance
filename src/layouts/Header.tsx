@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { RefreshCw, Menu, Sun, Moon, LogOutIcon } from "lucide-react";
+import { RefreshCw, Menu, Sun, Moon, LogOutIcon, User } from "lucide-react";
 import { SearchBar } from "../components/ui/SearchBar";
 import { TickerBar } from "../components/Dashboard/TickerBar";
 import { useTheme } from "../components/theme-provider";
@@ -139,7 +139,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
             </button>
-            {currentUser && (
+            {currentUser ? (
               <div className="flex flex-col items-center gap-1">
                 <LogOutIcon
                   className="h-5 w-5 text-red-600 cursor-pointer hover:text-red-500 transition-colors"
@@ -148,6 +148,15 @@ export function Header({ onMenuClick }: HeaderProps) {
                 />
                 <span>{currentUser.displayName}</span>
               </div>
+            ) : (
+              <Link
+                to="/login"
+                className="flex flex-col items-center text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                aria-label="Login"
+              >
+                <User className="h-5 w-5 inline-block mr-1" aria-hidden="true" />
+                Login
+              </Link>
             )}
           </div>
         </div>

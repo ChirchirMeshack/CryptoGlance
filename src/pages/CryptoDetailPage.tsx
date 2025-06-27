@@ -17,7 +17,7 @@ import {
   formatPercentage,
 } from "../utils/formatters";
 import { useWatchlist } from "../hooks/useWatchlist";
-import { useState } from "react";
+import {  useState } from "react";
 import { enqueueSnackbar } from "notistack";
 import { useAuth } from "../context/AuthContext";
 import { useLocation } from "react-router-dom";
@@ -33,7 +33,7 @@ import { useLocation } from "react-router-dom";
  */
 export function CryptoDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
+  const {  addToWatchlist, isInWatchlist, removeFromWatchlist } = useWatchlist();
   const [showLoginForm, setShowLoginForm] = useState(false);
   const { pathname } = useLocation();
 
@@ -44,7 +44,9 @@ export function CryptoDetailPage() {
   });
 
   const { currentUser }: any = useAuth();
-  console.log("Current User:", currentUser);
+  
+
+  const isWatched = id ? isInWatchlist(id) : false;
   if (showLoginForm) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 sm:p-8 text-center">
@@ -77,7 +79,6 @@ export function CryptoDetailPage() {
     );
   }
   const crypto = cryptos?.find((c) => c.id === id);
-  const isWatched = id ? isInWatchlist(id) : false;
 
   if (isLoading) {
     return (
@@ -139,12 +140,51 @@ export function CryptoDetailPage() {
   const priceChange = crypto.price_change_percentage_24h;
   const isPriceUp = priceChange >= 0;
 
-  const handleWatchlistToggle = () => {
-    if (isWatched) {
-      removeFromWatchlist(crypto.id);
-    } else {
-      addToWatchlist(crypto.id);
+  const handleWatchlistToggle = async (id: string): Promise<void> => {
+    if(isWatched){
+      const {success,message} = await removeFromWatchlist(id);
+      if(!success) {
+        enqueueSnackbar(
+          message,
+          {
+            variant: "info",
+            autoHideDuration: 5000,
+            preventDuplicate: true,
+          }
+        );
+        return;
+      }
+      enqueueSnackbar(
+        message,
+        {
+          variant: "success",
+          autoHideDuration: 5000,
+          preventDuplicate: true,
+        }
+      );
+      return;
     }
+    const {success,message} = await addToWatchlist(id);
+    if(!success) {
+      enqueueSnackbar(
+        message,
+        {
+          variant: "info",
+          autoHideDuration: 5000,
+          preventDuplicate: true,
+        }
+      );
+      return;
+    }
+    enqueueSnackbar(
+      message,
+      {
+        variant: "success",
+        autoHideDuration: 5000,
+        preventDuplicate: true,
+      }
+    );
+
   };
 
   return (
@@ -201,10 +241,10 @@ export function CryptoDetailPage() {
             </div>
           </div>
           <button
-            // onClick={handleWatchlistToggle}
+            type="button"
             onClick={
               currentUser
-                ? handleWatchlistToggle
+                ? () => handleWatchlistToggle(crypto.id)
                 : () => {
                     enqueueSnackbar(
                       "Please log in to add cryptocurrencies to your watchlist",
@@ -228,9 +268,9 @@ export function CryptoDetailPage() {
             }
           >
             <Star
-              className={`h-5 w-5 sm:h-6 sm:w-6 ${
-                isWatched ? "fill-current" : ""
-              }`}
+            className={`h-5 w-5 sm:h-6 sm:w-6 ${
+              isWatched ? "fill-current" : ""
+            }`}
             />
           </button>
         </div>

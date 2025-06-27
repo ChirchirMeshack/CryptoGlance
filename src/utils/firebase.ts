@@ -8,7 +8,7 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: "AIzaSyDhXBRwsVbeKkQzrg7ku55-CaBqJFI2F2Y",
   authDomain: "cryptoglance-c8cb5.firebaseapp.com",
   projectId: "cryptoglance-c8cb5",
   storageBucket: "cryptoglance-c8cb5.firebasestorage.app",
