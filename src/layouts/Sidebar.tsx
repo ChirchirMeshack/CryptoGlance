@@ -1,4 +1,4 @@
-import { Home, Star, TrendingUp, X, Github } from 'lucide-react';
+import { Home, Star, X, Github } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getGlobalStats } from '../services/api';
