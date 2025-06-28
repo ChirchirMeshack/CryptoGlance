@@ -169,5 +169,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Recent Contributions
 
 ### Authentication & Watchlist Feature
-  - **User Authentiation:** Implemented signup and login functionality using Firebase Authentication.
+  - **User Authentication:** Implemented signup and login functionality using Firebase Authentication.
   - **Persistent Watchlist:** Restricted watchlist feature to ***logged-in users***. Migrated storage of watchlisted cryptocurrencies from localStorage to Firebase Firestore, ensuring persistence across devices.
