@@ -165,3 +165,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [Recharts](https://recharts.org/) for charts
 - [Lucide Icons](https://lucide.dev/) for icons
+
+## Recent Contributions
+
+### Authentication & Watchlist Feature
+  - **User Authentication:** Implemented signup and login functionality using Firebase Authentication.
+  - **Persistent Watchlist:** Restricted watchlist feature to ***logged-in users***. Migrated storage of watchlisted cryptocurrencies from localStorage to Firebase Firestore, ensuring persistence across devices.
